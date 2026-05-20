@@ -1,38 +1,65 @@
 <template>
   <PageLayout>
+    <!-- LOADING -->
     <v-row v-if="loading">
       <v-col v-for="i in 8" :key="i" cols="12" sm="6" md="4" lg="3">
         <v-skeleton-loader type="image, article" />
       </v-col>
     </v-row>
 
+    <!-- LISTADO -->
     <v-row v-else>
-      <v-col v-for="record in records" :key="record.id" cols="12" sm="6" md="4" lg="3">
-        <v-card flat class="record-card" @click="$router.push(`/${currentScope === 'collections' ? 'collection' : 'record'}/${record.id}`)">
-          <v-img :src="record.imageDisplay" height="250" cover class="rounded-lg bg-grey-lighten-2 mb-3">
-            <template v-slot:placeholder>
-              <v-row class="fill-height ma-0" align="center" justify="center">
-                <v-progress-circular indeterminate color="grey-lighten-1" />
-              </v-row>
-            </template>
-          </v-img>
-
-          <v-card-item class="pa-0">
-            <v-card-title class="text-body-1 font-weight-bold line-clamp-2" style="line-height: 1.2;">
-              {{ record.displayTitle }}
-            </v-card-title>
-            
-            <v-card-subtitle v-if="record.cleanTags" class="text-caption text-primary mt-1">
-              {{ record.cleanTags }}
-            </v-card-subtitle>
-          </v-card-item>
-        </v-card>
+      <v-col
+        v-for="record in records"
+        :key="record.id"
+        cols="12"
+        sm="6"
+        md="4"
+        lg="3"
+      >
+<BaseCard
+  :image="record.imageDisplay"
+  :title="record.displayTitle"
+  :subtitle="record.cleanTags"
+  @click="goToRecord(record)"
+/>
       </v-col>
 
+      <!-- EMPTY -->
       <v-col v-if="records.length === 0" cols="12" class="text-center py-12">
-        <v-icon size="64" color="grey-lighten-1">mdi-database-search-outline</v-icon>
-        <p class="text-grey-darken-1 mt-4">No se han encontrado resultados para tu búsqueda.</p>
-        <v-btn variant="text" color="primary" @click="$router.push(route.path)">Limpiar filtros</v-btn>
+        <v-icon size="64">mdi-database-search-outline</v-icon>
+        <p class="mt-4">No se han encontrado resultados.</p>
+      </v-col>
+
+      <!-- PAGINACIÓN -->
+      <v-col
+        cols="12"
+        class="d-flex justify-center align-center mt-6"
+        v-if="showPagination"
+      >
+        <div class="pagination-wrapper">
+
+          <v-btn
+            variant="outlined"
+            :disabled="page === 1"
+            @click="changePage(page - 1)"
+          >
+            ←
+          </v-btn>
+
+          <div class="page-number">
+            {{ page }}
+          </div>
+
+          <v-btn
+            variant="outlined"
+            :disabled="!hasNextPage"
+            @click="changePage(page + 1)"
+          >
+            →
+          </v-btn>
+
+        </div>
       </v-col>
     </v-row>
   </PageLayout>
@@ -40,127 +67,217 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import api from '@/services/api'
 import PageLayout from '@/components/PageLayout.vue'
+import RecordCard from '@/components/RecordCard.vue'
+import BaseCard from '@/components/BaseCard.vue'
 
 const route = useRoute()
+const router = useRouter()
+
 const records = ref([])
 const loading = ref(false)
+
+const page = ref(parseInt(route.query.page) || 1)
+
+const limit = 6
+const hasNextPage = ref(false)
+
 const API_BASE = 'https://arcadium.cluster24.libnamic.eu'
 
-const currentScope = computed(() => route.query.scope || 'records')
+/* =========================
+   HELPERS
+========================= */
 
-// Limpieza de textos complejos que vienen de la API
 function getCleanText(field) {
-  if (!field) return '';
+  if (!field) return ''
   if (typeof field === 'object') {
-    const firstKey = Object.keys(field)[0];
-    const content = field[firstKey] || field;
-    return content.value || content['@value'] || content[0]?.value || (typeof content === 'string' ? content : '');
+    const firstKey = Object.keys(field)[0]
+    const content = field[firstKey] || field
+    return content.value || content['@value'] || content[0]?.value || ''
   }
-  if (typeof field === 'string' && field.startsWith('{')) return '';
-  return field;
+  if (typeof field === 'string' && field.startsWith('{')) return ''
+  return field
 }
 
-// Procesamiento de cada registro para la UI
 function processRecord(item) {
-  let img = item.preview || item.thumbnail || item.image || '/placeholder.png';
-  if (img !== '/placeholder.png' && !img.startsWith('http')) {
-    img = `${API_BASE}${img.startsWith('/') ? '' : '/'}${img}`;
+  // ✅ FIX IMÁGENES (MISMO PATRÓN QUE COLECCIONES)
+  let rawImg = item.preview || item.thumbnail || ''
+  let img = ''
+
+  if (rawImg && typeof rawImg === 'string') {
+    if (rawImg.startsWith('http')) {
+      img = rawImg
+    } else {
+      img = API_BASE + (rawImg.startsWith('/') ? '' : '/') + rawImg
+    }
   }
 
-  const titleField = item.metadata_fields?.['dcterms:title'] || item.title || item.name;
-  const displayTitle = getCleanText(titleField);
-  
-  let tags = item.joined_metadata || "";
-  let cleanTags = "";
+  const titleField =
+    item.metadata_fields?.['dcterms:title'] ||
+    item.title ||
+    item.name
+
+  const displayTitle = getCleanText(titleField)
+
+  let tags = item.joined_metadata || ''
+  let cleanTags = ''
+
   if (Array.isArray(tags)) {
-    cleanTags = tags.map(t => getCleanText(t)).filter(t => t).join(" • ");
+    cleanTags = tags
+      .map(t => getCleanText(t))
+      .filter(Boolean)
+      .join(' • ')
   } else {
-    const text = getCleanText(tags);
-    cleanTags = text ? text.split(',').join(" • ") : "";
+    const text = getCleanText(tags)
+    cleanTags = text ? text.split(',').join(' • ') : ''
   }
 
-  return { 
-    ...item, 
-    imageDisplay: img, 
+  return {
+    ...item,
+    imageDisplay: img || null,
     displayTitle: displayTitle || 'Sin título',
-    cleanTags: cleanTags 
+    cleanTags
   }
 }
 
-// Lógica de carga de datos sincronizada con la URL
+/* =========================
+   FETCH DATA
+========================= */
+
 async function fetchData() {
   loading.value = true
+
+  // ✅ NUEVO: control de scope
+  const scopes = (route.query.scope || 'records').split(',')
+
   try {
-    let activeFilters = [];
+    let activeFilters = []
+
     if (route.query.rules) {
-      try {
-        activeFilters = JSON.parse(route.query.rules);
-      } catch (e) {
-        console.warn("Filtros mal formados en la URL", e);
-      }
+      activeFilters = JSON.parse(route.query.rules)
     }
 
-    // Construcción de parámetros para la API
+    if (activeFilters.length > 0) {
+      params.filters = activeFilters
+    }
     const params = {
       with_labels: 1,
       fields: 'id,title,name,thumbnail,preview,description,joined_metadata,metadata_fields',
-      limit: 40,
-      page: route.query.page || 1,
-      search: route.query.q || '', 
+
+      limit: limit,
+      offset: (page.value - 1) * limit,
+
+      search: route.query.q?.trim() || '',
       combine: route.query.combine || 'AND',
     }
 
-    // Solo añadimos filtros si realmente hay reglas válidas
-    if (activeFilters.length > 0) {
-      params.filters = activeFilters;
-    }
+    const res = await api.getRecords(params)
 
-    if (route.query.sortBy) params.sort = route.query.sortBy
-    if (route.query.sortDir) params.direction = route.query.sortDir
+    const items =
+      res.data?.data ||
+      res.data?.items ||
+      []
 
-    // Decisión de endpoint
-    let response;
-    if (currentScope.value === 'collections') {
-      response = await api.getCollections(params)
-    } else {
-      response = await api.getRecords(params)
-    }
+    records.value = items.map(processRecord)
 
-    // Extraer datos según estructura de respuesta
-    const items = response.data?.data || response.data?.items || response.data || []
-    records.value = Array.isArray(items) ? items.map(processRecord) : []
-    
+    hasNextPage.value = items.length === limit
+
   } catch (err) {
-    console.error("Error cargando lista:", err)
     records.value = []
+    hasNextPage.value = false
   } finally {
     loading.value = false
   }
 }
 
-// Watch profundo para reaccionar a cualquier cambio en la URL
-watch(() => route.query, () => {
-  fetchData()
-}, { immediate: true, deep: true })
+/* =========================
+   PAGINACIÓN
+========================= */
+
+function changePage(newPage) {
+  if (newPage < 1) return
+  if (newPage > page.value && !hasNextPage.value) return
+
+  page.value = newPage
+
+  router.push({
+    query: {
+      ...route.query,
+      page: newPage
+    }
+  })
+
+  window.scrollTo({ top: 0, behavior: 'smooth' })
+}
+
+const showPagination = computed(() => {
+  return page.value > 1 || hasNextPage.value
+})
+
+watch(() => route.query, fetchData, { immediate: true })
+
+watch(() => route.query.page, (p) => {
+  page.value = parseInt(p) || 1
+})
+
+function goToRecord(record) {
+  router.push(`/record/${record.id}`)
+}
 </script>
 
 <style scoped>
-.record-card { 
-  cursor: pointer; 
-  background: transparent !important; 
-  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.record-card:hover { 
-  opacity: 0.9;
-  transform: translateY(-4px);
-}
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+.record-card-wrapper {
+  cursor: pointer;
+  border-radius: 12px;
   overflow: hidden;
+  background-color: #E6C08E;
+  border: 1px solid rgba(0,0,0,0.18);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.record-card-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgba(0,0,0,0.08);
+}
+
+.card-content {
+  padding: 16px;
+}
+
+.record-title {
+  font-size: 18px;
+  font-weight: 500;
+}
+
+.record-meta {
+  font-size: 13px;
+  opacity: 0.7;
+}
+
+/* NEW FALLBACK */
+.image-fallback {
+  height: 250px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #E6C08E;
+  border-radius: 8px;
+}
+
+/* PAGINACIÓN */
+.pagination-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+}
+
+.page-number {
+  min-width: 40px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
 }
 </style>

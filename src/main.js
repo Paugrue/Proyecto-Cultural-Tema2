@@ -2,50 +2,84 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 
-import '@/assets/styles.css'
+/* === ESTILOS EDITORIALES === */
+import '@/assets/editorial.css'
+
+
+/* === VUETIFY === */
 import 'vuetify/styles'
 import { createVuetify } from 'vuetify'
 import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
+import { aliases, mdi } from 'vuetify/iconsets/mdi'
+import '@mdi/font/css/materialdesignicons.css'
+
+/* =========================================================
+   VUETIFY – TEMA EDITORIAL
+   ========================================================= */
 
 const vuetify = createVuetify({
   components,
   directives,
+
+    icons: {
+    defaultSet: 'mdi',
+    aliases,
+    sets: {
+      mdi,
+    },
+  },
+
   theme: {
-    defaultTheme: 'minimalTheme',
+    defaultTheme: 'editorialTheme',
+    cssVariables: true,   
+
     themes: {
-      minimalTheme: {
+      editorialTheme: {
         dark: false,
         colors: {
-          background: '#fbfbfd',
-          surface: '#ffffff',
-          primary: '#111111',
-          secondary: '#6e6e73',
-          accent: '#0071e3',
-          error: '#d32f2f',
-          info: '#1976D2',
-          success: '#388e3c',
-          warning: '#fbc02d',
+          background: '#F2E8C9',
+          surface: '#FFFFFF',
+
+          primary: '#2F5D50',     
+          secondary: '#6B7C76',
+          accent: '#9FB8A0',
+
+          error: '#8C2F39',
+          info: '#375A7F',
+          success: '#3F7366',
+          warning: '#C6A85B',
         },
       },
     },
   },
+
   defaults: {
     global: {
-      ripple: false, // más minimalista
+      ripple: false,
     },
+
     VBtn: {
-      rounded: 'pill',
       elevation: 0,
-      style: { textTransform: 'none' },
+      rounded: 'sm',
+      style: {
+        textTransform: 'none',
+        fontWeight: '500',
+      },
     },
+
     VCard: {
-      elevation: 2,
-      rounded: 'lg',
-      style: { transition: 'all 0.25s ease' },
+      elevation: 0,
+      rounded: 'md',
     },
   },
 })
+
+
+
+/* =========================================================
+   APP
+   ========================================================= */
 
 createApp(App)
   .use(router)

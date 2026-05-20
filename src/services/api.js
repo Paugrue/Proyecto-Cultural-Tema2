@@ -1,23 +1,54 @@
-// src/services/api.js
 import axios from 'axios'
 
-
-// Antes: baseURL: 'https://arcadium.cluster24.libnamic.eu/api/glam'
-// Ahora:
 const apiClient = axios.create({
-  baseURL: '/api-proxy/api/glam', // Ahora usamos el túnel que creamos en el proxy
+  baseURL: '/api-proxy/api/glam',
   timeout: 10000,
-  headers: { 'Content-Type': 'application/json' },
+  headers: {
+    Accept: 'application/json'
+  }
 })
 
+const MEDIA_FIELDS =
+  'media_items,media_items.id,media_items.title,media_items.mimetype,media_items.thumbnail,media_items.preview,media_items.full,media_items.attachment'
+
+const RECORD_FIELDS = [
+  'id',
+  'title',
+  'description',
+  'thumbnail',
+  'preview',
+
+  // MEDIA (ESTABLE)
+  MEDIA_FIELDS,
+
+  // METADATOS
+  'metadata_fields',
+  'canonical_joined_metadata',
+  'joined_metadata',
+
+  // RELACIONES
+  'collections',
+  'collections_titles'
+].join(',')
+
 export default {
-  // ---------- RECORDS ----------
+  // =========================
+  // RECORDS
+  // =========================
+
   getRecords(params = {}) {
     return apiClient.get('/record', { params })
   },
 
   getRecord(id, params = {}) {
-    return apiClient.get(`/record/${id}`, { params })
+    return apiClient.get(`/record/${id}`, {
+      params: {
+        with_labels: 1,
+        with_thumbnails: 1,
+        fields: RECORD_FIELDS,
+        ...params
+      }
+    })
   },
 
   getRecordById(id, params = {}) {
@@ -43,12 +74,15 @@ export default {
         group_by: 'collection_title',
         limit: 1000,
         offset: 0,
-        ...params,
-      },
+        ...params
+      }
     })
   },
 
-  // ---------- COLLECTIONS ----------
+  // =========================
+  // COLLECTIONS
+  // =========================
+
   getCollections(params = {}) {
     return apiClient.get('/collection', { params })
   },
@@ -57,21 +91,36 @@ export default {
     return apiClient.get(`/collection/${id}`, {
       params: {
         with_labels: 1,
-        fields:
-          'id,title,description,thumbnail,joined_metadata,canonical_joined_metadata,metadata_fields_order,children',
         with_thumbnails: 1,
-        ...params,
-      },
+        fields: [
+          'id',
+          'title',
+          'description',
+          'thumbnail',
+
+          'metadata_fields',
+          'canonical_joined_metadata',
+          'joined_metadata',
+
+          'children',
+          'media_items'
+        ].join(','),
+
+        ...params
+      }
     })
   },
 
   getCollectionsBasic(limit = 100, offset = 0) {
     return apiClient.get('/collection', {
-      params: { fields: 'id,title', limit, offset },
+      params: { fields: 'id,title', limit, offset }
     })
   },
 
-  // ---------- MEDIA ----------
+  // =========================
+  // MEDIA
+  // =========================
+
   getMedia(params = {}) {
     return apiClient.get('/media', { params })
   },
@@ -81,11 +130,12 @@ export default {
       params: {
         with_labels: 1,
         search_all_languages: 1,
-        fields: 'thumbnail,id,title,description,attachment.id,attachment',
+        fields:
+          'id,title,description,thumbnail,preview,full,attachment,mimetype',
         limit: 24,
         offset: 0,
-        ...params,
-      },
+        ...params
+      }
     })
   },
 
@@ -93,12 +143,15 @@ export default {
     return apiClient.get(`/media/${id}`, { params })
   },
 
-  // ---------- ONTOLOGY ----------
+  // =========================
+  // ONTOLOGY
+  // =========================
+
   getOntology(params = {}) {
     return apiClient.get('/ontology', { params })
   },
 
   getOntologyFieldList(params = {}) {
     return apiClient.get('/ontology', { params })
-  },
+  }
 }

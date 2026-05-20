@@ -10,7 +10,7 @@
       class="d-md-none menu-trigger"
       @click="drawer = !drawer"
     >
-      <!-- SVG que NO puede ser hecho transparente por estilos externos -->
+      <!-- SVG  -->
       <svg 
         width="28" 
         height="28" 
@@ -34,6 +34,7 @@
       <router-link to="/record" class="menu-link">Registros</router-link>
       <router-link to="/collection" class="menu-link">Colecciones</router-link>
       <router-link to="/pages" class="menu-link">Páginas</router-link>
+      <router-link to="/favorites" class="menu-link">Favoritos</router-link>
     </div>
 
     <v-spacer />
@@ -67,7 +68,8 @@ export default {
         { name: 'Inicio', path: '/inicio' },
         { name: 'Registros', path: '/record' },
         { name: 'Colecciones', path: '/collection' },
-        { name: 'Páginas', path: '/pages' }
+        { name: 'Páginas', path: '/pages' },
+        { name: 'Favoritos', path: '/favorites' },
       ]
     };
   }
@@ -75,46 +77,124 @@ export default {
 </script>
 
 <style scoped>
+/* =========================================================
+   BARRA DE NAVEGACIÓN – MINIMAL + NEON SUAVE
+========================================================= */
+
 .nav-minimal {
-  background-color: rgba(255, 255, 255, 0.85) !important;
-  backdrop-filter: blur(12px);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  background: #f5f5f7 !important;
+
+  border-bottom:
+    1px solid rgba(0, 255, 200, 0.08);
+
+  backdrop-filter:
+    blur(18px);
+
+  box-shadow:
+    0 0 18px rgba(0, 255, 200, 0.04),
+    0 0 40px rgba(0, 255, 200, 0.02);
 }
 
-/* Asegura visibilidad del botón */
+/* =========================================================
+   BOTÓN MENÚ (MÓVIL)
+========================================================= */
+
 .menu-trigger {
   opacity: 1 !important;
   z-index: 1000 !important;
+
+  color: #111111 !important;
+
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease,
+    transform 0.25s ease;
 }
+
+.menu-trigger:hover {
+  color: var(--neon-cyan) !important;
+
+  text-shadow:
+    0 0 8px rgba(0,255,224,0.28);
+
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   CONTENEDOR CENTRAL
+========================================================= */
 
 .nav-center {
   display: flex;
   align-items: center;
-  gap: 36px;
+  gap: 32px;
 }
+
+/* =========================================================
+   LINKS
+========================================================= */
 
 .menu-link {
-  font-weight: 500;
+  font-family: "Inter", sans-serif;
+
   font-size: 15px;
-  color: #555;
+  font-weight: 500;
+
+  color: rgba(17,17,17,0.78) !important;
+
   text-decoration: none;
+
   position: relative;
-  transition: all 0.2s ease;
+
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease,
+    opacity 0.25s ease;
 }
 
+/* =========================================================
+   HOVER NEON SUTIL
+========================================================= */
+
 .menu-link:hover {
-  color: #111;
+  color: var(--neon-cyan) !important;
+
+  text-shadow:
+    0 0 10px rgba(0,255,224,0.22);
+
+  opacity: 1;
 }
+
+/* =========================================================
+   SUBRAYADO NEON
+========================================================= */
 
 .menu-link::after {
   content: "";
+
   position: absolute;
+
   left: 0;
   bottom: -6px;
+
   width: 0%;
   height: 1px;
-  background-color: #111;
-  transition: width 0.25s ease;
+
+  border-radius: 999px;
+
+  background:
+    linear-gradient(
+      90deg,
+      transparent,
+      var(--neon-cyan),
+      transparent
+    );
+
+  box-shadow:
+    0 0 8px rgba(0,255,224,0.22);
+
+  transition:
+    width 0.28s ease;
 }
 
 .menu-link:hover::after {

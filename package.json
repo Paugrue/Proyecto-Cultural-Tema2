@@ -3,13 +3,19 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@mdi/font": "^7.4.47",
     "axios": "^1.13.5",
+    "pdf-poppler": "^0.2.3",
+    "pdfjs-dist": "^5.6.205",
     "vue": "^3.5.28",
     "vue-router": "^4.6.4",
     "vuetify": "^3.11.8"
@@ -20,8 +26,5 @@
     "sass-loader": "^16.0.7",
     "vite": "^7.3.1",
     "vite-plugin-vue-devtools": "^8.0.6"
-  },
-  "engines": {
-    "node": "^20.19.0 || >=22.12.0"
   }
 }

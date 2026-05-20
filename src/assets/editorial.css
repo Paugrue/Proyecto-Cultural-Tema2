@@ -1,0 +1,625 @@
+/* =========================================================
+   GLOBAL THEME — EDITORIAL MINIMAL + SUBTLE NEON
+========================================================= */
+
+:root {
+
+  /* =====================================================
+     BASE
+  ===================================================== */
+
+  --color-background:
+    #f5f5f7;
+
+  --color-surface:
+    #ffffff;
+
+  --color-surface-soft:
+    rgba(255,255,255,0.72);
+
+  --color-text:
+    #111111;
+
+  --color-text-soft:
+    rgba(0,0,0,0.62);
+
+  --color-heading:
+    #111111;
+
+  /* =====================================================
+     NEON ACCENT (SOLO INTERACCIONES)
+  ===================================================== */
+
+  --color-primary:
+    #111111;
+
+  --color-primary-hover:
+    #000000;
+
+  --color-neon:
+    #00e5ff;
+
+  --color-neon-soft:
+    rgba(0,229,255,0.14);
+
+  --color-secondary:
+    #7c4dff;
+
+  /* =====================================================
+     BORDERS
+  ===================================================== */
+
+  --color-border:
+    rgba(0,0,0,0.08);
+
+  --color-border-hover:
+    rgba(0,229,255,0.24);
+
+  /* =====================================================
+     SHADOWS
+  ===================================================== */
+
+  --shadow-soft:
+    0 8px 32px rgba(0,0,0,0.05);
+
+  --shadow-medium:
+    0 12px 40px rgba(0,0,0,0.08);
+
+  --shadow-neon:
+    0 0 14px rgba(0,229,255,0.18);
+
+  --shadow-neon-strong:
+    0 0 22px rgba(0,229,255,0.28);
+
+  /* =====================================================
+     TYPOGRAPHY
+  ===================================================== */
+
+  --font-main:
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    sans-serif;
+
+  --font-title:
+    "Archivo Black",
+    sans-serif;
+
+  /* =====================================================
+     RADIUS
+  ===================================================== */
+
+  --radius-sm:
+    10px;
+
+  --radius-md:
+    18px;
+
+  --radius-lg:
+    24px;
+}
+
+/* =========================================================
+   BASE
+========================================================= */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body,
+.v-application {
+
+  font-family:
+    var(--font-main);
+
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(0,229,255,0.035),
+      transparent 28%
+    ),
+    #f5f5f7;
+
+  color:
+    var(--color-text);
+
+  -webkit-font-smoothing:
+    antialiased;
+
+  -moz-osx-font-smoothing:
+    grayscale;
+
+  text-rendering:
+    optimizeLegibility;
+
+  overflow-x:
+    hidden;
+}
+
+/* =========================================================
+   TITLES
+========================================================= */
+
+h1,
+h2,
+h3,
+.hero-overlay h1,
+.page-title {
+
+  font-family:
+    var(--font-title) !important;
+
+  font-weight:
+    700 !important;
+
+  letter-spacing:
+    -0.04em;
+
+  line-height:
+    0.95;
+
+  text-transform:
+    uppercase;
+
+  color:
+    #111111 !important;
+}
+
+h1 {
+  font-size:
+    clamp(2.8rem, 5vw, 4.6rem);
+}
+
+h2 {
+  font-size:
+    clamp(2rem, 3vw, 3rem);
+}
+
+h3 {
+  font-size:
+    1.45rem;
+}
+
+/* =========================================================
+   TEXT
+========================================================= */
+
+p {
+  color:
+    var(--color-text-soft);
+
+  line-height:
+    1.7;
+}
+
+/* =========================================================
+   LINKS
+========================================================= */
+
+a {
+
+  color:
+    #111111 !important;
+
+  text-decoration:
+    none;
+
+  transition:
+    color 0.25s ease,
+    opacity 0.25s ease,
+    text-shadow 0.25s ease;
+}
+
+a:hover {
+
+  color:
+    #111111 !important;
+
+  opacity:
+    0.72;
+
+  text-shadow:
+    0 0 10px rgba(0,229,255,0.18);
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.search-input .v-field {
+
+  border-radius:
+    14px !important;
+
+  background:
+    rgba(255,255,255,0.88) !important;
+
+  border:
+    1px solid rgba(0,0,0,0.06) !important;
+
+  backdrop-filter:
+    blur(10px);
+
+  box-shadow:
+    var(--shadow-soft);
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    transform 0.25s ease;
+}
+
+.search-input .v-field:hover {
+
+  border-color:
+    rgba(0,229,255,0.18) !important;
+
+  box-shadow:
+    var(--shadow-soft),
+    var(--shadow-neon);
+}
+
+.search-input .v-field:focus-within {
+
+  border-color:
+    rgba(0,229,255,0.32) !important;
+
+  box-shadow:
+    var(--shadow-soft),
+    var(--shadow-neon-strong);
+}
+
+/* =========================================================
+   CARDS
+========================================================= */
+
+.v-card.record-card,
+.base-card,
+.v-card {
+
+  background:
+    rgba(255,255,255,0.82) !important;
+
+  backdrop-filter:
+    blur(14px);
+
+  border:
+    1px solid rgba(0,0,0,0.06);
+
+  border-radius:
+    var(--radius-lg) !important;
+
+  overflow:
+    hidden;
+
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease,
+    border-color 0.3s ease;
+
+  box-shadow:
+    var(--shadow-soft);
+}
+
+.v-card.record-card:hover,
+.base-card:hover,
+.v-card:hover {
+
+  transform:
+    translateY(-4px);
+
+  border-color:
+    rgba(0,229,255,0.22);
+
+  box-shadow:
+    var(--shadow-medium),
+    var(--shadow-neon);
+}
+
+/* =========================================================
+   IMAGES
+========================================================= */
+
+.record-image,
+.card-image,
+.v-img {
+
+  transition:
+    transform 0.55s ease,
+    filter 0.35s ease;
+}
+
+.record-card:hover .record-image,
+.base-card:hover .card-image {
+
+  transform:
+    scale(1.035);
+
+  filter:
+    saturate(1.03)
+    contrast(1.01);
+}
+
+/* =========================================================
+   TEXT CONTENT
+========================================================= */
+
+.record-title,
+.card-title {
+
+  font-size:
+    1.05rem;
+
+  font-weight:
+    700;
+
+  line-height:
+    1.3;
+
+  color:
+    #111111;
+}
+
+.record-meta,
+.card-subtitle {
+
+  color:
+    var(--color-text-soft);
+
+  font-size:
+    0.8rem;
+}
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.v-btn {
+
+  border-radius:
+    999px !important;
+
+  text-transform:
+    none !important;
+
+  font-weight:
+    600 !important;
+
+  letter-spacing:
+    -0.01em;
+
+  transition:
+    all 0.25s ease !important;
+}
+
+/* FILLED */
+
+.v-btn--variant-filled {
+
+  background:
+    #111111 !important;
+
+  color:
+    #ffffff !important;
+
+  box-shadow:
+    none;
+}
+
+.v-btn--variant-filled:hover {
+
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    var(--shadow-neon-strong);
+}
+
+/* OUTLINED */
+
+.v-btn--variant-outlined {
+
+  border:
+    1px solid rgba(0,0,0,0.1) !important;
+
+  background:
+    rgba(255,255,255,0.72) !important;
+
+  color:
+    #111111 !important;
+
+  backdrop-filter:
+    blur(10px);
+}
+
+.v-btn--variant-outlined:hover {
+
+  border-color:
+    rgba(0,229,255,0.34) !important;
+
+  box-shadow:
+    var(--shadow-neon);
+}
+
+/* TEXT */
+
+.v-btn--variant-text:hover {
+
+  text-shadow:
+    0 0 8px rgba(0,229,255,0.18);
+}
+
+/* =========================================================
+   NAVBAR
+========================================================= */
+
+.nav-minimal {
+
+  background:
+    rgba(255,255,255,0.74) !important;
+
+  backdrop-filter:
+    blur(16px);
+
+  border-bottom:
+    1px solid rgba(0,0,0,0.05);
+}
+
+.menu-link {
+
+  transition:
+    color 0.25s ease,
+    text-shadow 0.25s ease,
+    opacity 0.25s ease;
+}
+
+.menu-link:hover {
+
+  opacity:
+    0.72;
+
+  text-shadow:
+    0 0 10px rgba(0,229,255,0.2);
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer-minimal {
+
+  background:
+    rgba(255,255,255,0.72) !important;
+
+  backdrop-filter:
+    blur(14px);
+
+  border-top:
+    1px solid rgba(0,0,0,0.05);
+}
+
+/* =========================================================
+   DRAWER
+========================================================= */
+
+.v-navigation-drawer {
+
+  background:
+    rgba(255,255,255,0.84) !important;
+
+  backdrop-filter:
+    blur(20px);
+
+  border-right:
+    1px solid rgba(0,0,0,0.05);
+}
+
+/* =========================================================
+   INPUTS
+========================================================= */
+
+input,
+textarea,
+select {
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
+}
+
+input:focus,
+textarea:focus,
+select:focus {
+
+  box-shadow:
+    var(--shadow-neon);
+}
+
+/* =========================================================
+   ICONS
+========================================================= */
+
+.v-icon {
+
+  opacity:
+    1 !important;
+
+  transition:
+    text-shadow 0.25s ease,
+    color 0.25s ease;
+}
+
+.v-btn:hover .v-icon {
+
+  text-shadow:
+    0 0 10px rgba(0,229,255,0.35);
+}
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+
+  background:
+    rgba(0,0,0,0.03);
+}
+
+::-webkit-scrollbar-thumb {
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,0.55),
+      rgba(0,229,255,0.55)
+    );
+
+  border-radius:
+    999px;
+}
+
+/* =========================================================
+   SELECTION
+========================================================= */
+
+::selection {
+
+  background:
+    rgba(0,229,255,0.18);
+
+  color:
+    #111111;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 768px) {
+
+  .v-card.record-card,
+  .base-card,
+  .v-card {
+
+    border-radius:
+      18px !important;
+  }
+
+  h1 {
+
+    font-size:
+      2.5rem;
+  }
+
+  h2 {
+
+    font-size:
+      1.9rem;
+  }
+}
